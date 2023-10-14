@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser-arcade-physics.min.js"></script>
+</head>
+<body>
+<script>
+
+
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    scene: {
+        preload: preload,
+        create: create,
+        update: update,
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            // debug: true,
+            // gravity: { y: 400 }
+        }
+    }
+};
+const game = new Phaser.Game(config);
+
+
+// SEマーカー
+const markers = [
+    { name: '0', start: 0, duration: 0.4, config: {} },
+    { name: '1', start: 1, duration: 0.4, config: {} },
+    { name: '2', start: 2, duration: 0.4, config: {} },
+    { name: '3', start: 3, duration: 0.4, config: {} },
+    { name: '4', start: 4, duration: 0.4, config: {} },
+    { name: '5', start: 5, duration: 0.4, config: {} },
+    { name: '6', start: 6, duration: 0.4, config: {} },
+    { name: '7', start: 7, duration: 0.4, config: {} },
+    { name: '8', start: 8, duration: 0.4, config: {} },
+    { name: '9', start: 9, duration: 0.4, config: {} },
+    { name: '10', start: 10, duration: 0.4, config: {} },
+    { name: '11', start: 11, duration: 0.4, config: {} },
+    { name: '12', start: 12, duration: 0.4, config: {} },
+    { name: '13', start: 13, duration: 0.4, config: {} },
+    { name: '14', start: 14, duration: 0.4, config: {} },
+    { name: '15', start: 15, duration: 0.4, config: {} },
+    { name: '16', start: 16, duration: 0.4, config: {} },
+    { name: '17', start: 17, duration: 0.4, config: {} },
+    { name: '18', start: 18, duration: 0.4, config: {} },
+    { name: '19', start: 19, duration: 0.4, config: {} },
+    { name: '20', start: 20, duration: 0.4, config: {} },
+    { name: '21', start: 21, duration: 0.4, config: {} },
+    { name: '22', start: 22, duration: 0.4, config: {} },
+    { name: '23', start: 23, duration: 0.4, config: {} },
+    { name: '24', start: 24, duration: 0.4, config: {} },
+    { name: '25', start: 25, duration: 0.4, config: {} },
+    { name: '26', start: 26, duration: 0.4, config: {} },
+    { name: '27', start: 27, duration: 0.4, config: {} },
+    { name: '28', start: 28, duration: 0.4, config: {} },
+    { name: '29', start: 29, duration: 0.4, config: {} },
+    { name: '30', start: 30, duration: 0.4, config: {} },
+    { name: '31', start: 31, duration: 0.4, config: {} },
+    { name: '32', start: 32, duration: 0.4, config: {} },
+    { name: '33', start: 33, duration: 0.4, config: {} },
+    { name: '34', start: 34, duration: 0.4, config: {} },
+    { name: '35', start: 35, duration: 0.4, config: {} },
+    { name: '36', start: 36, duration: 0.4, config: {} },
+    { name: '37', start: 37, duration: 0.4, config: {} },
+    { name: '38', start: 38, duration: 0.4, config: {} },
+]
+
+const idols = [
+    { name: "天海 春香", type: "P", color: "#e22b30", age: 17, birthday: "04/03", stature: 158, hometown: "神奈川", hobby: "カラオケ、長電話", skill: "お菓子作り", favorite: "歌うこと" },
+    { name: "如月 千早", type: "F", color: "#2743d2", age: 16, birthday: "02/25", stature: 162, hometown: "東京", hobby: "音楽鑑賞", skill: "歌", favorite: "トレーニング" },
+    { name: "星井 美希", type: "A", color: "#b4e04b", age: 15, birthday: "11/23", stature: 161, hometown: "神奈川", hobby: "友達とおしゃべり、ネイルアート", skill: "寝ること", favorite: "おにぎり、いちごババロア" },
+    { name: "萩原 雪歩", type: "P", color: "#d3dde9", age: 17, birthday: "12/24", stature: 155, hometown: "東京", hobby: "MY詩集を書くこと", skill: "日本茶をいれること", favorite: "ブログ" },
+    { name: "高槻 やよい", type: "A", color: "#f39939", age: 14, birthday: "03/25", stature: 145, hometown: "埼玉", hobby: "オセロ、野球", skill: "節約、家庭菜園", favorite: "家族" },
+    { name: "菊地 真", type: "P", color: "#515558", age: 17, birthday: "08/29", stature: 159, hometown: "静岡", hobby: "スポーツ全般", skill: "空手、ダンス", favorite: "ぬいぐるみ" },
+    { name: "水瀬 伊織", type: "F", color: "#fd99e1", age: 15, birthday: "05/05", stature: 153, hometown: "東京", hobby: "海外旅行、食べ歩き", skill: "ショッピング", favorite: "果汁100％オレンジジュース" },
+    { name: "四条 貴音", type: "F", color: "#a6126a", age: 18, birthday: "01/21", stature: 169, hometown: "京都？", hobby: "天体観測、歴史", skill: "直感", favorite: "ラーメン" },
+    { name: "秋月 律子", type: "F", color: "#01a860", age: 19, birthday: "06/23", stature: 156, hometown: "東京", hobby: "資格取得", skill: "分析・実践", favorite: "ゲーム、小説" },
+    { name: "三浦 あずさ", type: "A", color: "#9238be", age: 21, birthday: "07/19", stature: 168, hometown: "千葉", hobby: "犬の散歩", skill: "占い", favorite: "カフェ巡り" },
+    { name: "双海 亜美", type: "A", color: "#ffe43f", age: 13, birthday: "05/22", stature: 158, hometown: "東京", hobby: "メール、エコ", skill: "モノマネ", favorite: "遊ぶこと" },
+    { name: "双海 真美", type: "A", color: "#ffe43f", age: 13, birthday: "05/22", stature: 158, hometown: "東京", hobby: "メール、ゲーム", skill: "モノマネ", favorite: "遊ぶこと" },
+    { name: "我那覇 響", type: "P", color: "#01adb9", age: 16, birthday: "10/10", stature: 152, hometown: "沖縄", hobby: "編み物、卓球", skill: "家事全般", favorite: "散歩、動物" },
+    { name: "春日 未来", type: "P", color: "#ea5b76", age: 14, birthday: "06/28", stature: 156, hometown: "東京", hobby: "可愛い髪留めを\n　　　　 集めること", skill: "歌うこと", favorite: "ライブ" },
+    { name: "最上 静香", type: "F", color: "#6495cf", age: 14, birthday: "09/14", stature: 162, hometown: "埼玉", hobby: "テニス", skill: "ピアノ", favorite: "うどん" },
+    { name: "伊吹 翼", type: "A", color: "#fed552", age: 14, birthday: "07/30", stature: 158, hometown: "東京", hobby: "遊びの計画を\n　　　　たてること", skill: "じゃんけん", favorite: "ビーフステーキ" },
+    { name: "田中 琴葉", type: "P", color: "#92cfbb", age: 18, birthday: "10/05", stature: 157, hometown: "東京", hobby: "お風呂", skill: "フェンシング", favorite: "アイス" },
+    { name: "島原 エレナ", type: "A", color: "#9bce92", age: 17, birthday: "10/26", stature: 160, hometown: "ブラジル", hobby: "パーティー", skill: "サンバを踊ること", favorite: "みんなで騒ぐこと" },
+    { name: "佐竹 美奈子", type: "P", color: "#58a6dc", age: 18, birthday: "03/22", stature: 158, hometown: "東京", hobby: "格闘ゲーム", skill: "料理", favorite: "友達との長電話" },
+    { name: "所 恵美", type: "F", color: "#454341", age: 16, birthday: "04/15", stature: 159, hometown: "埼玉", hobby: "カラオケ", skill: "人の誕生を覚えること", favorite: "友達" },
+    { name: "徳川 まつり", type: "P", color: "#5abfb7", age: 19, birthday: "02/04", stature: 163, hometown: "愛知", hobby: "漫画あつめ", skill: "演技", favorite: "焼きマシュマロ、ウミウシ" },
+    { name: "箱崎 星梨花", type: "A", color: "#ed90ba", age: 13, birthday: "02/20", stature: 146, hometown: "東京", hobby: "バイオリン", skill: "アジリティのハンドラー", favorite: "紅茶、クッキー" },
+    { name: "野々原 茜", type: "A", color: "#eb613f", age: 16, birthday: "12/03", stature: 150, hometown: "埼玉", hobby: "スキップ", skill: "インラインスケート", favorite: "プリン" },
+    { name: "望月 杏奈", type: "A", color: "#7e6ca8", age: 14, birthday: "05/31", stature: 152, hometown: "神奈川", hobby: "オンラインゲーム", skill: "タイピング", favorite: "かわいいもの" },
+    { name: "ロコ", type: "F", color: "#fff03c", age: 15, birthday: "03/01", stature: 154, hometown: "東京", hobby: "物を作ること", skill: "目を閉じたまま歩ける", favorite: "ハト" },
+    { name: "七尾 百合子", type: "P", color: "#c7b83c", age: 15, birthday: "03/18", stature: 154, hometown: "東京", hobby: "読書", skill: "ペン回し", favorite: "おはぎ" },
+    { name: "高山 紗代子", type: "P", color: "#7f6575", age: 17, birthday: "12/29", stature: 156, hometown: "茨木", hobby: "ハリネズミの飼育", skill: "一晩寝ると元気になれる", favorite: "友達、アイドル仲間" },
+    { name: "松田 亜利沙", type: "P", color: "#b54461", age: 16, birthday: "06/07", stature: 154, hometown: "東京", hobby: "アイドルのデータ集め", skill: "アイドルの変装を見破れる", favorite: "ファミレスのデザート" },
+    { name: "高坂 海美", type: "P", color: "#e9739b", age: 16, birthday: "08/10", stature: 155, hometown: "千葉", hobby: "ボルダリング", skill: "常人にできないポージングができる", favorite: "ダンス" },
+    { name: "中谷 育", type: "P", color: "#f7e78e", age: 10, birthday: "12/16", stature: 142, hometown: "東京", hobby: "アニメ鑑賞", skill: "早起き", favorite: "おかあさん" },
+    { name: "天空橋 朋花", type: "F", color: "#bee3e3", age: 15, birthday: "11/11", stature: 156, hometown: "東京", hobby: "ファンに喜んで\n　　　　もらうこと", skill: "口げんか", favorite: "かわいい扇子" },
+    { name: "エミリー", type: "P", color: "#554171", age: 13, birthday: "01/08", stature: 156, hometown: "イギリス", hobby: "かるた遊び", skill: "日本舞踊", favorite: "抹茶" },
+    { name: "北沢 志保", type: "F", color: "#afa690", age: 14, birthday: "01/18", stature: 161, hometown: "東京", hobby: "お気に入りの\n　　　　絵本を探すこと", skill: "記憶力、集中力が高い", favorite: "ぬいぐるみ" },
+    { name: "舞浜 歩", type: "F", color: "#e25a9b", age: 19, birthday: "07/23", stature: 158, hometown: "愛媛", hobby: "ショッピング", skill: "ダンス", favorite: "わさび" },
+    { name: "木下 ひなた", type: "A", color: "#d1342c", age: 14, birthday: "07/04", stature: 146, hometown: "北海道", hobby: "ガーデニング", skill: "天気を当てること", favorite: "おばあちゃん" },
+    { name: "矢吹 可奈", type: "P", color: "#f5ad3b", age: 14, birthday: "08/18", stature: 155, hometown: "神奈川", hobby: "なんでも歌にすること", skill: "合唱", favorite: "屋上で歌うこと" },
+    { name: "横山 奈緒", type: "P", color: "#788bc5", age: 17, birthday: "02/12", stature: 159, hometown: "大阪", hobby: "銭湯＆温泉巡り", skill: "スタミナがある", favorite: "友達とおしゃべり" },
+    { name: "二階堂 千鶴", type: "F", color: "#f19557", age: 21, birthday: "10/21", stature: 165, hometown: "東京", hobby: "カフェで\n　　　　アパレル誌チェック", skill: "人の名前と顔を忘れない", favorite: "憧れの目で見られること" },
+    { name: "馬場 このみ", type: "A", color: "#f1becb", age: 24, birthday: "06/12", stature: 143, hometown: "山口", hobby: "北米ドラマ鑑賞", skill: "麻雀", favorite: "日本酒" },
+    { name: "大神 環", type: "A", color: "#ee762e", age: 12, birthday: "04/29", stature: 147, hometown: "香川", hobby: "探検", skill: "石投げ", favorite: "アスレチックランド" },
+    { name: "豊川 風花", type: "A", color: "#7278a8", age: 22, birthday: "09/02", stature: 162, hometown: "千葉", hobby: "献血", skill: "息を止めること", favorite: "猫" },
+    { name: "宮尾 美也", type: "A", color: "#d7a96b", age: 17, birthday: "04/24", stature: 156, hometown: "東京", hobby: "囲碁、将棋", skill: "視力が高い", favorite: "サンドイッチ" },
+    { name: "福田 のり子", type: "P", color: "#eceb70", age: 18, birthday: "03/30", stature: 164, hometown: "東京", hobby: "格闘技観戦", skill: "バイクの運転", favorite: "焼肉" },
+    { name: "真壁 瑞希", type: "F", color: "#99b7dc", age: 17, birthday: "01/27", stature: 160, hometown: "神奈川", hobby: "手品", skill: "バトントワリング", favorite: "クロスワードパズル" },
+    { name: "篠宮 可憐", type: "A", color: "#b63b40", age: 16, birthday: "08/27", stature: 159, hometown: "東京", hobby: "アロマテラピー", skill: "ポーカーフェイス", favorite: "お風呂" },
+    { name: "百瀬 莉緒", type: "F", color: "#f19591", age: 23, birthday: "11/21", stature: 168, hometown: "広島", hobby: "ヨガエクササイズ", skill: "メイク", favorite: "可愛くてセクシーな服" },
+    { name: "永吉 昴", type: "F", color: "#aeb49c", age: 15, birthday: "09/20", stature: 154, hometown: "東京", hobby: "野球", skill: "変化球", favorite: "アイドル" },
+    { name: "北上 麗花", type: "A", color: "#6bb6b0", age: 20, birthday: "05/17", stature: 164, hometown: "長野", hobby: "登山", skill: "肺活量が大きい", favorite: "ドライブ" },
+    { name: "周防 桃子", type: "F", color: "#efb864", age: 11, birthday: "11/06", stature: 140, hometown: "東京", hobby: "かわいいシール集め", skill: "演技や台詞の暗記", favorite: "ホットケーキ" },
+    { name: "ジュリア", type: "F", color: "#d7385f", age: 16, birthday: "09/26", stature: 157, hometown: "福岡", hobby: "なし", skill: "ギター", favorite: "パンクロック" },
+    { name: "白石 紬", type: "F", color: "#b6b3e2", age: 17, birthday: "05/29", stature: 160, hometown: "石川（金沢）", hobby: "庭園・甘味処の散策", skill: "着物の着付け、三味線", favorite: "和スイーツ" },
+    { name: "桜守 歌織", type: "A", color: "#152169", age: 23, birthday: "03/27", stature: 165, hometown: "東京", hobby: "合唱・ゴルフ", skill: "乗馬", favorite: "子供、洋菓子" },
+];
+
+/** @type {{name: string, song: string, idols: number[]}[]} */
+const units = [
+    { name: "MILLONSTARS", songs: ["Rat A Tat!!!", "セブンカウント"], idols: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51]},
+    { name: "Sunshine Rhythm", songs: ["サンリズム・オーケストラ♪"], idols: [31, 34, 36, 17, 24, 29, 15, 18, 42, 23, 35, 45, 51]},
+    { name: "BlueMoon Harmony", songs: ["brave HARMONY"], idols: [19, 33, 43, 30, 37, 44, 14, 25, 46, 26, 47, 49, 50]},
+    { name: "Starlight Melody", songs: ["Starry Melody"], idols: [16, 27, 28, 32, 21, 22, 39, 13, 20, 41, 38, 40, 48]},
+    { name: "キャンサー", songs: ["ランニング・ハイッ"], idols: [31, 34, 36]},
+    { name: "レオ", songs: ["ゲキテキ！ムテキ！恋したい！"], idols: [17, 24, 29]},
+    { name: "リブラ", songs: ["Bonnes! Bonnes!! Vacances!!!"], idols: [15, 18, 42]},
+    { name: "カプリコーン", songs: ["NO CURRY NO LIFE"], idols: [23, 35, 45]},
+    { name: "サジタリアス", songs: ["Raise the FLAG"], idols: [19, 33, 43]},
+    { name: "ピスケス", songs: ["P.S I Love You"], idols: [30, 37, 44]},
+    { name: "ウィルゴ", songs: ["プリムラ"], idols: [14, 25, 46]},
+    { name: "アクアリウス", songs: ["待ちぼうけのLacrima"], idols: [26, 47, 49]},
+    { name: "スコーピオ", songs: ["リフレインキス"], idols: [16, 27, 28, 32]},
+    { name: "アリエス", songs: ["Sweet Sweet Soul"], idols: [21, 22, 39]},
+    { name: "タウラス", songs: ["メメント？モメント♪ルルルルル☆"], idols:[13, 20, 41]},
+    { name: "ジェミニ", songs: ["永遠の花"], idols: [38, 40, 48]},
+    { name: "オフィウクス", songs: ["電波感傷"], idols: [50, 51]},
+    { name: "フェアリースターズ", songs: ["FairyTaleじゃいられない"], idols: [19, 30, 37, 45, 32, 43, 50, 14, 49, 24, 33, 46, 48]},
+    { name: "エンジェルスターズ", songs: ["Angelic Parade♪"], idols: [17, 41, 38, 40, 47, 51, 15, 22, 44, 21, 23, 34, 39 ]},
+    { name: "プリンセススターズ", songs: ["Princess Be Ambitious!!"], idols: [25, 27, 29, 18, 26, 28, 36, 42, 20, 31, 13, 16, 35]},
+    { name: "夜想令嬢", songs: ["昏き星、遠い月", "Everlasting"], idols: [19, 30, 37, 45] },
+    { name: "Cleasky", songs: ["虹色letters", "想い出はクリアスカイ"], idols: [17, 41] },
+    { name: "トゥインクルリズム", songs: ["ZETTAI × BREAK!! トゥインクルリズム", "Tomorrow Program"], idols: [25, 27, 29]},
+    { name: "EScape", songs: ["Melty Fantasia", "I.D 〜EScape from Utopia〜"], idols: [32, 43, 50]},
+    { name: "4 Luxury", songs: ["花盛りWeekend✿", "RED ZONE"], idols: [38, 40, 47, 51]},
+    { name: "閃光☆HANABI団", songs: ["咲くは浮世の君花火", "BORN ON DREAM! 〜HANABI☆NIGHT〜"], idols: [18, 26, 28, 36, 42]},
+    { name: "D/Zeal", songs: ["ハーモニクス", "餞の鳥"], idols: [14, 49]},
+    { name: "りるきゃん 〜3 little candy〜", songs: ["ハルマチ女子", "彼氏になってよ。"], idols: [15, 22, 44]},
+    { name: "Charlotte・Charlotte", songs: ["だってあなたはプリンセス", "ミラージュ・ミラー"], idols: [20, 31]},
+    { name: "Jelly PoP Beans", songs: ["月曜日のクリームソーダ", "I did+I will"], idols: [24, 33, 46, 48]},
+    { name: "ピコピコプラネッツ", songs: ["ピコピコIIKO! インベーダー", "Get lol! Get lol! SONG"], idols: [21, 23, 34, 39]},
+    { name: "STAR ELEMENTS", songs: ["Episode. Tiara", "ギブミーメタファー"], idols:[13, 16, 35]},
+    { name: "Chrono-Lexica", songs: ["dans l'obscurité", "囚われのTeaTime"], idols:[23, 24, 25, 43, 46]},
+    { name: "Sherry 'n Cherry", songs: ["Cherry Colored Love", "夜と、明かりと。"], idols:[38, 45]},
+    { name: "花咲夜", songs: ["百花は月下に散りぬるを", "矛盾の月"], idols:[30, 31, 50]},
+    { name: "Jus-2Mint", songs: ["Super Duper", "Hang In There!"], idols:[18, 36]},
+    { name: "miraclesonic★expassion", songs: ["絶対的Performer", "My Evolution"], idols: [17, 28, 33, 42]},
+    { name: "Fleuranges", songs: ["Special Wonderful Smile", "旅立ちのコンパス"], idols: [21, 34, 41, 44]},
+    { name: "オペラセリア・煌輝座", songs: ["Parade d'amour", "星宙のVoyage"], idols: [16, 20, 32, 51]},
+    { name: "TIntMe!", songs: ["Arrive You ～それが運命でも～", "ライラックにつつまれて"], idols: [29, 39, 48]},
+    { name: "TRICK&TREAT", songs: ["Black★Party", "フシギトラベラー"], idols: [22, 47]},
+    { name: "chicAAmor", songs: ["深紅のパシオン", "Paradox of LOVE"], idols: [26, 37, 40, 49]},
+    { name: "≡君彩≡", songs: ["ReTTale", "パンとフィルム"], idols: [19, 27, 35]},
+    { name: "ストロベリーポップムーン", songs: ["ABSOLUTE RUN!!!", "Be proud"], idols: [13, 14, 15]},
+];
+
+
+// P射出の軌跡描画用シーン
+class TrajectoryScene extends Phaser.Scene {
+    static tpoints = []
+
+    constructor() { super({ key: 'Trajectory' }) }
+
+    preload() { 
+        this.load.image('tpoint', 'assets/TrajectoryPoint.png')
+    }
+
+    create() {
+        this.dummy = this.physics.add.body(400, 500, 48, 48)
+        this.dummy.setCollideWorldBounds(true);
+        this.dummy.setBounce(1);
+        this.tpoints = []
+        for (let i = 0; i < 5; i++) {
+            this.tpoints.push(this.add.image(0, 0, 'tpoint'))
+        }
+    }
+
+    updateTrajectory(pc, point) {
+        this.dummy.x = pc.x
+        this.dummy.y = pc.y
+        this.dummy.setVelocity(startPoint.x - point.x, (startPoint.y - point.y) * 9)
+        this.dummy.setGravityY(400);
+        this.tpoints.forEach((tp, i) => {
+            this.physics.world.step(0.2)
+            tp.setPosition(this.dummy.x, this.dummy.y)
+        })
+        this.dummy.setGravityY(0)
+        this.dummy.setVelocity(0, 0)
+    }
+}
+
+
+let scene;
+let timeline;
+let input;
+
+let hitSound;
+let bgm;
+
+let nextIdol;
+let scoutIdols = [];
+let scoutUnits = [];
+
+let pc;
+
+let unit;
+let unitTween;
+let unitProfile;
+let unitProfileTween;
+let unitCount;
+let unitCountTween;
+let unitIcons;
+
+let emitter;
+let icons;
+let iconTween;
+let hitCircles;
+let hitTween;
+let idolImage;
+let idolTween;
+let name;
+let nameTween;
+let profile;
+let profileTween;
+let scoutCount;
+let scoutCountTween;
+
+
+// Pの初期位置
+const startPoint = new Phaser.Math.Vector2(400, 500);
+// アイコンのスケール
+const iconScale = 0.25
+
+
+// P射出軌跡用シーンを起動
+let trajectoryScene = game.scene.add('Trajectory', TrajectoryScene)
+game.scene.start('Trajectory')
+
+
+function preload() {
+    this.load.image('star', 'assets/star.png');
+    this.load.image('P', 'assets/p.png');
+    this.load.spritesheet('icon', 'assets/icon.png', { frameWidth: 152, frameHeight: 152 });
+    this.load.spritesheet('idol', 'assets/idol.png', { frameWidth: 280, frameHeight: 500 });
+    this.load.audio('hit', 'assets/hit.mp3')
+    this.load.audio('bgm', 'assets/bgm.mp3')
+}
+
+function create() {
+    nextIdol = 0;
+    scoutIdols = [];
+    scoutUnits = [];
+
+    scene = this;
+    timeline = this.add.timeline()
+    timeline.play()
+    createBG();
+
+    // BGM
+    let bgm = this.sound.get('bgm')
+    if (bgm == null)
+        bgm = this.sound.add('bgm', { loop: true, volume: 0.4 })
+    if (!this.sound.locked) {
+        bgm.play()
+    } else {
+        this.sound.once(Phaser.Sound.Events.UNLOCKED, () => {
+            bgm.play()
+        })
+    }
+    
+    // プロデューサー
+    pc = this.physics.add.sprite(startPoint.x, startPoint.y, 'P');
+    pc.setCollideWorldBounds(true);
+    pc.body.checkCollision.up = false;
+    pc.body.checkCollision.left = false;
+    pc.body.checkCollision.right = false;
+    pc.setInteractive({ draggable: true});
+    pc.on('dragstart', (p) => {
+        this.scene.wake('Trajectory')
+    })
+    pc.on('drag', (pointer, x, y) => {
+        pc.setPosition(x, y);
+        this.scene.get('Trajectory').updateTrajectory(pc, pointer)
+    });
+    pc.on('dragend', (p) => {
+        this.input.setDraggable(pc, false)
+        pc.setInteractive({ draggable: false})
+        pc.setBounce(1.0);
+        pc.setGravityY(400);
+        pc.setVelocityX(startPoint.x - p.x);
+        pc.setVelocityY((startPoint.y - p.y) * 9);
+        this.scene.sleep('Trajectory')
+    });
+
+    // 入力
+    this.input.setDraggable(pc);
+    this.input.mouse.disableContextMenu();
+
+    // アイドル
+    icons = this.physics.add.group({ 
+        key: 'icon',
+        frame: Phaser.Utils.Array.NumberArray(13, 51),
+        setScale: { x: iconScale, y: iconScale },
+    })
+    icons.getChildren().forEach((s, i) => {
+        s.setData('id', i + 13)
+        s.setCollideWorldBounds(true)
+        s.setBounce(0.8)
+        Phaser.Math.RandomXY(s.body.velocity, 30)
+        s.setVelocityY(0)
+    });
+    Phaser.Actions.RandomRectangle(icons.getChildren(), 
+                            new Phaser.Geom.Rectangle(16, 160, 768, 100))
+
+    // 接触
+    this.physics.add.collider(pc, icons, collectStar, null, this)
+
+    // アイドルプロフィール
+    idolImage = this.add.image(-650, 500, 'idol')
+    idolImage.postFX.addGlow(0x202020, 1)
+    idolImage.visible = false
+    idolTween = createTweenChain(idolImage, tweens4)
+    profile = createIdolProfileText(``)
+    profileTween = createTweenChain(profile.preFX.addReveal(0.1, 1, 1), tweens6)
+    name = createIdolNameText('#ea5b76', '')
+    nameTween = createTweenChain(name, tweens5)
+    scoutCount = createScoutCountText()
+    scoutCountTween = createTweenChain(scoutCount, tweenScoutCount)
+
+    // ユニットプロフィール
+    unit = createUnitText('')
+    unit.setPosition(400, 300)
+    unitTween = createTweenChain(unit, tweens2)
+    unitProfile = createUnitProfileText(``)
+    unitProfileTween = createTweenChain(unitProfile.preFX.addReveal(0.1, 0, 1), tweens7)
+    unitIcons = this.add.group({
+        key: 'icon',
+        repeat: 4,
+        setScale: { x: 0.24, y: 0.24 },
+        setXY: { x: 20, y: 410, stepX: 38 },
+        visible: false,
+    })
+    // unitCount = createUnitCountText()
+    // unitCountTween = createTweenChain(unitCount, tweenScoutCount)
+}
+
+function update() {
+    // 終了処理
+    if (checkGameOver()) {
+        pc.setVelocityX(0)
+        pc.setBounce(0.1)
+        scene.sound.stopAll()
+        createRetryText()
+    }
+}
+
+// 終了判定
+function checkGameOver() {
+    return pc.body.bounce.y >= 0.5 && pc.y >= startPoint.y && pc.body.velocity.y > 0
+}
+
+
+
+/////////////////////////////////////
+// アイドルと接触
+function collectStar(pc, icon) {
+    let id = icon.getData('id')
+    scoutIdols.push(id)
+
+    // Pを跳ねさせる
+    pc.setVelocityY(Math.max(pc.body.velocity.y - 300, -500))
+    scene.sound.play('hit', markers[nextIdol])
+    
+    // スカウト演出
+    let c = scene.add.circle(icon.x, icon.y, 8)
+    c.setStrokeStyle(1, 0xffff80)
+    createTweenChain(c, tweenHitCircle)
+        .resume()
+        .on('complete', () => { c.destroy() })
+
+    // 後に加入表示
+    let pos = scoutIconPos(nextIdol)
+    icon.disableBody(true, false)
+    timeline.add({
+        in: 800,
+        once: true,
+        run: () => {
+            icon.setX(pos.x)
+            icon.setY(pos.y)
+            createTweenChain(icon, tweens3).resume()
+            let e = createEmitter(icon)
+            e.on('complete', () => {
+                e.destroy()
+            })
+        }
+    })
+
+    // アイドルプロフィール
+    name.setText(idols[id].name)
+    name.setStroke(idols[id].color)
+    profile.setText(idolProfile(id))
+    idolImage.setFrame(id)
+    scoutCount.setText((nextIdol+1).toString() + '人')
+    let ts = [idolTween, profileTween, nameTween, scoutCountTween]
+    ts.forEach(t => t.restart())
+
+    // ユニットプロフィール
+    let ary = checkCompleteUnits(id)
+    Phaser.Math.RND.shuffle(ary).forEach(u => {
+        scoutUnits.push(u); 
+        unit.setText(u.name)
+        unitProfile.setText(unitProfileText(u))
+
+        unitIcons.getChildren().forEach(icon => { icon.setVisible(false) })
+        if (u.idols.length <= 5) {
+            u.idols.forEach((idol, i) => {
+                let pos = [1, 2, 3, 0, 4]
+                unitIcons.getChildren().at(pos[i]).setFrame(idol).setVisible(true)
+            })
+        }
+    })
+    if (ary.length > 0) {
+        // unitCount.setText(scoutUnits.length + 'ﾕﾆｯﾄ')
+        ts = [unitTween, unitProfileTween]
+        ts.forEach(ts => ts.restart())
+    }
+ary.forEach(v => {console.log(v.name);});
+    
+
+    nextIdol++
+}
+
+// スカウトアイコンの位置
+function scoutIconPos(idx) {
+    return new Phaser.Math.Vector2((idx % 8) * 46 + 210, Math.trunc(idx / 8) * 46 + 400)
+}
+
+// アイドルプロファイル文字列
+function idolProfile(id) {
+    let idol = idols[id]
+    return [
+        '年　齢：' + idol.age + "歳", 
+        '身　長：' + idol.stature + "㎝",
+        '出身地：' + idol.hometown,
+        '趣　味：' + idol.hobby,
+    ]
+}
+
+// ユニットプロファイル文字列
+function unitProfileText(unit) {
+    return unit.songs.map((s, i) => {
+        if (i == 0)
+            return '🎵' + s
+        else
+            return '\n🎵' + s
+    })
+}
+
+// パーティクルエミッターの作成
+function createEmitter(obj) {
+    return scene.add.particles(0, 0, 'star', {
+        speed: 24,
+        lifespan: 1000,
+        quantity: 10,
+        scale: { start: 0.4, end: 0 },
+        // emitting: false,
+        emitZone: { type: 'edge', source: obj.getBounds(), quantity: 40 },
+        duration: 15,
+    })
+}
+
+// 完成したユニットがあるか
+function checkCompleteUnits(idolId) {
+    return units.filter(u => {
+        if (u.idols.includes(idolId)) {
+            return u.idols.reduce((a, v) => {
+                return a & scoutIdols.includes(v)
+            }, true)
+        }
+        return false
+    })
+}
+
+
+
+/////////////////////////////////////
+// Tween
+const tweens1 = [
+]
+// unitname
+const tweens2 = [
+    { x: -200, y: 350, scale: 1, alpha: 1, duration: 0 },
+    { x: 6, duration: 500, ease: 'power3' },
+]
+// icon
+// ease:sine.inで定速回転。
+const tweens3 = [
+    { scaleX: iconScale, flipX: false, duration: 0, },
+    { scaleX: 0, flipX: true, yoyo: true, duration: 100, repeat: 0, ease: 'sine.in' },
+    { scaleX: 0, flipX: true, yoyo: true, duration: 100, repeat: 0, ease: 'sine.in' },
+]
+// idolImage
+const tweens4 = [
+    { x: 650, y: 450, visible: true, duration: 0, alpha: { value: 0, duration: 0 } },
+    { y: 480, duration: 400, alpha: { value: 1, duration: 200} },
+]
+// name
+const tweens5 = [
+    { x: -500, duration: 0 },
+    { x: 500, y: 470, delay: 200, duration: 0, alpha: { value: 0, duration: 0 }, onComplete: () => name.setVisible(true)},
+    { x: 560, y: 450, duration: 300, alpha: { value: 1, duration: 200 }},
+]
+// profile
+const tweens6 = [
+    { progress: 0, duration: 0, onComplete: () => profile.setVisible(true) },
+    { progress: 1, duration: 200, },
+]
+// unit profile
+const tweens7 = [
+    { progress: 0, duration: 0, onComplete: () => unitProfile.setVisible(true) },
+    { progress: 1, duration: 500, },
+]
+const tweenHitCircle = [
+    { radius: 8, duration: 0, },
+    { radius: 60, duration: 500, ease: 'power4' , strokeAlpha: { value: 1, duration: 500}, }
+]
+const tweenScoutCount = [
+    { x: 520, y: 340, duration: 0 },
+    { scale: 1.4, duration: 150, yoyo: true, ease: 'Sine.easeInOut', },
+]
+
+
+// トゥイーンチェインの作成
+function createTweenChain(target, tweens) {
+    return scene.tweens.chain({
+        targets: target,
+        tweens: tweens,
+        paused: true,
+        onActive: () => target.visible = true,
+        // onComplete: () => target.visible = false,
+    })
+}
+
+
+/////////////////////////////////////
+// テキストオブジェクト
+
+function setTextGradient(t) {
+    let g = t.context.createLinearGradient(0, 0, 0, t.height);
+    g.addColorStop(0, '#111111')
+    g.addColorStop(0.4, '#ffffff')
+    g.addColorStop(0.4, '#aaaaaa')
+    g.addColorStop(1, '#1111')
+    t.setFill(g)
+}
+
+function createUnitText(txt) {
+    let t = scene.add.text(0, 0, txt, {
+        fontSize: 20,
+        fontStyle: 'bold',
+        padding: { x: 8, y: 8 },
+        color: '#ffffff',
+        stroke: '#8090e0',
+        strokeThickness: 8,
+        shadow: {
+            color: '#808080',
+            fill: false,
+            stroke: true,
+            offsetX: 2,
+            offsetY: 2,
+            blur: 4
+        }
+    });
+
+    // t.setOrigin(0.5);
+    // t.preFX.setPadding(32);
+    // t.preFX.addGlow(0xffffe0);
+    // t.postFX.addShine(1, .2, 5)
+    // t.preFX.addPixelate(1);
+    // setTextGradient(t);
+    return t;
+}
+
+function createUnitProfileText(txt) {
+    let t = scene.add.text(6, 420, txt, {
+        color: '#202020',
+        stroke: '#202020',
+        strokeThickness: 1,
+        backgroundColor: '#f0f0f0a0',
+        lineSpacing: 1,
+        padding: { x: 4, y: 16},
+    })
+    
+    t.setVisible(false)
+    return t
+}
+
+function createIdolNameText(color, txt) {
+    let t = scene.add.text(-500, 400, txt, {
+        fontSize: 32,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        padding: { x: 8, y: 8 },
+    })
+
+    t.setVisible(false)
+    t.setStroke(color, 8)
+    t.setRotation(-0.07 * Math.PI)
+    return t
+}
+
+function createIdolProfileText(txt) {
+    let t = scene.add.text(560, 480, txt, {
+        color: '#202020',
+        stroke: '#202020',
+        strokeThickness: 1,
+        backgroundColor: '#f0f0f080',
+        lineSpacing: 2,
+        padding: 8,
+    })
+
+    return t
+}
+
+function createScoutCountText() {
+    let t = scene.add.text(-560, 340, '0人', {
+        fontSize: 48,
+        fontStyle: 'bold',
+        color: '#ffffff',
+        stroke: '#f07090',
+        strokeThickness: 12,
+    })
+
+    t.setOrigin(0.5)
+    t.setVisible(false)
+    return t
+}
+
+function createUnitCountText() {
+    let t = scene.add.text(15, 370, '0ﾕﾆｯﾄ', {
+        fontSize:32,
+        fontStyle: 'bold',
+        color: '#f0f0ff',
+        stroke: '#b0b0e0',
+        strokeThickness: 8,
+    })
+
+    return t
+}
+
+function createRetryText() {
+    let t = scene.add.text(400, 150, "Retry", {
+        fontSize: 48,
+        fontStyle: 'bold',
+        color: '#ffc060',
+        stroke: '#ffffff',
+        strokeThickness: 16,
+    })
+    
+    t.setOrigin(0.5)
+    t.setInteractive()
+    t.on('pointerup', () => scene.scene.restart())
+    return t;
+}
+
+function createDebugTextObj() {
+    return scene.add.text(10, 10, '', {
+        color: '#00c000',
+        shadow: { color: '#202020', fill: true, blur: 8 }
+    })
+}
+
+
+///////////////////////////////
+// image
+function createBG() {
+    const bg = scene.add.image(400, 300, '__WHITE')
+    bg.setDisplaySize(800, 600)
+    bg.preFX.addGradient(0x6060f0, 0xc0f0c0, 0.2)
+    return bg;
+}
+
+
+
+</script>
+</body>
+</html>
